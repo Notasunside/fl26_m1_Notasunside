@@ -16,14 +16,12 @@ bool isDigitInAscii(char c) { return c >= '0' && c <= '9'; }
 bool isTokenChar(char c) { return isLetterInAscii(c) || isDigitInAscii(c); }
 
 char lowercaseAscii(char c) {
-    if (c >= 'A' && c <= 'Z') {
-        return static_cast<char>(c - 'A' + 'a');
-    }
+    if (c >= 'A' && c <= 'Z') {return static_cast<char>(c - 'A' + 'a'); }
     return c;
 }
 
-// Scan the gap between tokens for a paragraph break
-// M1 treats a paragraph boundary as two line endings separated only by spaces or tabs
+ //--Scan the gap between tokens for a paragraph break//
+ //--M1 treats a paragraph boundary as two line endings separated only by spaces or tabs
 //
 bool containsParagraphBoundary(const std::string& text, std::size_t begin, std::size_t end) {
     bool sawLineEnding = false;
@@ -31,13 +29,13 @@ bool containsParagraphBoundary(const std::string& text, std::size_t begin, std::
         if (text[index] == '\r' && index + 1 < end && text[index + 1] == '\n') {
             if (sawLineEnding) { return true; }
             sawLineEnding = true;
-            ++index; // skip the '\n' in a CRLF pair
+            ++index; //--skip the '\n' in a CRLF pair //
         }
         else if (text[index] == '\n') {
             if (sawLineEnding) { return true; }
             sawLineEnding = true;
         }
-        // nonspace sep = blank-line pattern interrupted
+        //--nonspace sep = blank-line pattern interrupted//
         else if (text[index] != ' ' && text[index] != '\t') {
             sawLineEnding = false;
         }
@@ -63,15 +61,15 @@ bool containsParagraphBoundary(const std::string& text, std::size_t begin, std::
 // paragraph = 0
 std::vector<TokenInfo> TextProcessor::tokenize(const std::string& text)
  {
-    std::vector<TokenInfo> tokens;
-    std::size_t cursor = 0;
-    std::size_t currentParagraph = 0;
     std::size_t separatorStart = 0;
+    std::vector<TokenInfo> tokens;
+    std::size_t currentParagraph = 0;
+    std::size_t cursor = 0;
     while (cursor < text.size()) {
-        //  past separators until  next token starts
+        //--past separators until  next token starts//
         while (cursor < text.size() && !isTokenChar(text[cursor])) { ++cursor; }
 
-        // iff the gap between tokens includes a blank line  next token starts a new paragraph.
+        //--iff the gap between tokens includes a blank line  next token starts a new paragraph.
         if (!tokens.empty() && containsParagraphBoundary(text, separatorStart, cursor)) {
             ++currentParagraph;
         }
@@ -91,7 +89,9 @@ std::vector<TokenInfo> TextProcessor::tokenize(const std::string& text)
             currentParagraph
         });
         separatorStart = cursor;
+        //-- 
     }
+    //--paragrpah count
     return tokens;
 }
 
@@ -108,6 +108,7 @@ std::vector<std::string> TextProcessor::terms(const std::string& text) {
     for (const TokenInfo& token : tokenInfo) {
         normalizedTerms.push_back(token.token);
     }
+    //-- 
     return normalizedTerms;
 }
 
@@ -124,6 +125,7 @@ std::vector<std::string> TextProcessor::terms(const std::string& text) {
 
 std::string TextProcessor::normalize(const std::string& text) {
     std::vector<TokenInfo> tokens = tokenize(text);
+    //-- recheck//
     return join(tokens, 0, tokens.size());
 }
 
@@ -137,16 +139,17 @@ std::string TextProcessor::normalize(const std::string& text) {
 
 std::string TextProcessor::join(const std::vector<TokenInfo>& tokens, std::size_t begin, std::size_t end) {
     if (begin >= tokens.size() || begin >= end) {
-        return "";
+        return  "";
     }
-    end = std::min(end, tokens.size());
     std::string joinedText;
+    end = std::min(end, tokens.size());
     for (std::size_t index = begin; index < end; ++index) {
         if (!joinedText.empty()) {
             joinedText += ' ';
         }
         joinedText += tokens[index].token;
     }
+    //--simple loop?//
     return joinedText;
 }
 
@@ -158,16 +161,17 @@ std::string TextProcessor::join(const std::vector<TokenInfo>& tokens, std::size_
 // }
 std::string TextProcessor::join(const std::vector<std::string>& tokens, std::size_t begin, std::size_t end) {
     if (begin >= tokens.size() || begin >= end) {
-        return "";
+        return  "";
     }
-    end = std::min(end, tokens.size());
     std::string joinedText;
+    end = std::min(end, tokens.size());
     for (std::size_t index = begin; index < end; ++index) {
         if (!joinedText.empty()) {
             joinedText += ' ';
         }
         joinedText += tokens[index];
     }
+    //-- strings instead of TokenInfo //
     return joinedText;
 }
 

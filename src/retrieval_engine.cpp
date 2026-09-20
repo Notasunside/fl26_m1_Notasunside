@@ -9,11 +9,11 @@
 
 namespace aiws {
 
-// pretty much the same idea as before, just rounded to a stable number
-// so the ranking doesn't get weird from floating point noise.
-double RetrievalEngine::canonical_score(double some_value) {
-    const double scale = 1e12;
-    return std::round(some_value * scale) / scale;
+//--pretty much the same idea as before, just rounded to a stable number
+//--so the ranking doesn't get weird from floating point noise//
+double RetrievalEngine::canonical_score(    double some_value   ) {
+    const double scale =1e12;
+    return std::round(some_value * scale) /scale; //
 }
 
 std::vector<SearchResult> RetrievalEngine::search(const std::string& query, int k,
@@ -24,12 +24,11 @@ std::vector<SearchResult> RetrievalEngine::search(const std::string& query, int 
     if (k < 0) { throw std::invalid_argument("k cannot be negative"); }
     if (k == 0 || chunks.empty()) {  return {};}
     if (words.empty()) { return {}; }
-
-    // quick dedupe so repeated words don't get counted twice
+    //--quick dedupe so repeated words don't get counted twice //
     std::sort(words.begin(), words.end());
     words.erase(std::unique(words.begin(), words.end()), words.end());
     const std::size_t uniqueWordCount = words.size();
-
+    //
     struct CandidateInfo {
         double total_score{};
         std::size_t matched_terms{};
@@ -67,7 +66,7 @@ std::vector<SearchResult> RetrievalEngine::search(const std::string& query, int 
         const double coverage_boost =
             1.0 + 0.10 * static_cast<double>(candidate.matched_terms) /
                 static_cast<double>(uniqueWordCount);
-
+        //
         SearchResult result;
         result.matched_terms = candidate.matched_terms;
         result.chunk_id = current_chunk.id;
