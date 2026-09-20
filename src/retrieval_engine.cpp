@@ -40,7 +40,7 @@ std::vector<SearchResult> RetrievalEngine::search(const std::string& query, int 
     for (const std::string& query_term : words) {
         const std::vector<CorpusIndex::Posting>* term_postings =index.postings( query_term );
         if (term_postings == nullptr) {continue; }
-
+        
         const double document_frequency =
             static_cast<double>(index.document_frequency(query_term) );
         const double inverse_document_frequency =

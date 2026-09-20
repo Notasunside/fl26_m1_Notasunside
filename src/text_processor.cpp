@@ -7,15 +7,12 @@ namespace aiws {
 namespace {
 
 // M1 tokens are built from ASCII letters and digits only.
-bool isLetterInAscii(char c) {
+bool isALetterInASCII(char c) {
     return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
-
-bool isDigitInAscii(char c) { return c >= '0' && c <= '9'; }
-
-bool isTokenChar(char c) { return isLetterInAscii(c) || isDigitInAscii(c); }
-
-char lowercaseAscii(char c) {
+bool isADigitInASCII(char c) { return c >= '0' && c <= '9'; }
+bool isTokenChar(char c) { return isALetterInASCII(c) || isADigitInASCII(c); }
+char lowercaseASCII(char c) {
     if (c >= 'A' && c <= 'Z') {return static_cast<char>(c - 'A' + 'a'); }
     return c;
 }
@@ -25,23 +22,22 @@ char lowercaseAscii(char c) {
 //
 bool containsParagraphBoundary(const std::string& text, std::size_t begin, std::size_t end) {
     bool sawLineEnding = false;
-    for (std::size_t index = begin; index < end; ++index) {
-        if (text[index] == '\r' && index + 1 < end && text[index + 1] == '\n') {
+    for (std::size_t ind = begin; ind < end; ++ind) {
+        if (text[ind] == '\r' && ind + 1 < end 
+            && text[ind + 1] == '\n') {
             if (sawLineEnding) { return true; }
             sawLineEnding = true;
-            ++index; //--skip the '\n' in a CRLF pair //
+            ++ind; //--skip the '\n' in a CRLF pair //
         }
-        else if (text[index] == '\n') {
+        else if (text[ind] == '\n') {
             if (sawLineEnding) { return true; }
             sawLineEnding = true;
         }
         //--nonspace sep = blank-line pattern interrupted//
-        else if (text[index] != ' ' && text[index] != '\t') {
+        else if (text[ind] != ' ' && text[ind] != '\t') {
             sawLineEnding = false;
         }
-    }
-
-    return false;
+    }    return false;
 }
 
 } // namespace
@@ -78,7 +74,7 @@ std::vector<TokenInfo> TextProcessor::tokenize(const std::string& text)
         std::size_t tokenStart = cursor;
         std::string token;
         while (cursor < text.size() && isTokenChar(text[cursor])) {
-            token += lowercaseAscii(text[cursor]);
+            token += lowercaseASCII(text[cursor]);
             ++cursor;
         }
         std::size_t tokenEnd = cursor;
@@ -143,11 +139,11 @@ std::string TextProcessor::join(const std::vector<TokenInfo>& tokens, std::size_
     }
     std::string joinedText;
     end = std::min(end, tokens.size());
-    for (std::size_t index = begin; index < end; ++index) {
+    for (std::size_t ind = begin; ind < end; ++ind) {
         if (!joinedText.empty()) {
             joinedText += ' ';
         }
-        joinedText += tokens[index].token;
+        joinedText += tokens[ind].token;
     }
     //--simple loop?//
     return joinedText;
@@ -165,11 +161,11 @@ std::string TextProcessor::join(const std::vector<std::string>& tokens, std::siz
     }
     std::string joinedText;
     end = std::min(end, tokens.size());
-    for (std::size_t index = begin; index < end; ++index) {
+    for (std::size_t ind = begin; ind < end; ++ind) {
         if (!joinedText.empty()) {
             joinedText += ' ';
         }
-        joinedText += tokens[index];
+        joinedText += tokens[ind];
     }
     //-- strings instead of TokenInfo //
     return joinedText;

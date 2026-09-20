@@ -8,6 +8,8 @@ namespace aiws {
 Chunker::Chunker(ChunkingPolicy policy) : policy_(policy) {
     if (policy_.max_tokens == 0 || policy_.overlap >= policy_.max_tokens ||
         policy_.paragraph_window > policy_.max_tokens) {
+
+
         throw std::invalid_argument("invalid chunking policy");
     }
 }
@@ -63,6 +65,11 @@ std::vector<Chunk> Chunker::chunk(const Document& document, std::size_t document
             }
         }
 
+        //split single document into a sequence of overlapping, normalized chunks
+        //tokenize text, walk through doc in token-sized shapes, create boundaries at token limit
+        //prefer paragraph breaks in small window near token limit
+        //chunk keeps metadata
+        
         Chunk currentChunk;
             currentChunk.id = document.id() + "#" + std::to_string(chunkSequence);
             currentChunk.document_id = document.id();
