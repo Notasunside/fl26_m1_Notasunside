@@ -55,14 +55,15 @@ std::vector<Chunk> Chunker::chunk(const Document& document, std::size_t document
             //--bstart of the paragraph-preference window//
                 std::size_t paragraphWindowStart = chunkStartInd + policy_.max_tokens - policy_.paragraph_window;
             //--search backward for the latest paragraph boundary//
-            for (std::size_t boundaryIndex = chunkEndInd; boundaryIndex > paragraphWindowStart; --boundaryIndex) 
-            {
-                if (boundaryIndex < normalizedTokens.size() && normalizedTokens[boundaryIndex].paragraph != normalizedTokens[boundaryIndex - 1].paragraph) 
-                {
-                    //--can next chunk still move forwar?//
-                    if (boundaryIndex - chunkStartInd > policy_.overlap) { chunkEndInd = boundaryIndex; break;}
+            for (std::size_t boundaryIndex = chunkEndInd + 1; boundaryIndex-- > paragraphWindowStart;) {
+                    if (boundaryIndex < normalizedTokens.size() && normalizedTokens[boundaryIndex].paragraph !=
+                            normalizedTokens[boundaryIndex - 1].paragraph) {
+
+                        if (boundaryIndex - chunkStartInd > policy_.overlap) { chunkEndInd = boundaryIndex;
+                            break;
+                        }
+                    }
                 }
-            }
         }
 
         //split single document into a sequence of overlapping, normalized chunks
